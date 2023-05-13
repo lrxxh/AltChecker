@@ -37,16 +37,19 @@ if os.path.isfile(json_file_path):
     with open(json_file_path, 'r') as f:
         data = json.load(f)
 
+    printed_usernames = set()  # Set to store printed usernames
     for item in data:
         username = item['name']
-        is_premium = "Premium"
-        try:
-            response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{username}")
-            if response.status_code == 204:
-                is_premium = "Cracked"
-        except:
-            pass
-        print(f"{username} ({is_premium})")
+        if username not in printed_usernames:  # Check if username has already been printed
+            is_premium = "Premium"
+            try:
+                response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{username}")
+                if response.status_code == 204:
+                    is_premium = "Cracked"
+            except:
+                pass
+            print(f"{username} ({is_premium})")
+            printed_usernames.add(username)  # Add the username to the set of printed usernames
 else:
     print(f"{json_file_path} not found.")
 
@@ -59,14 +62,16 @@ if os.path.isfile(username_cache_path):
         data = json.load(f)
 
     for username in data.values():
-        is_premium = "Premium"
-        try:
-            response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{username}")
-            if response.status_code == 204:
-                is_premium = "Cracked"
-        except:
-            pass
-        print(f"{username} ({is_premium})")
+        if username not in printed_usernames:  # Check if username has already been printed
+            is_premium = "Premium"
+            try:
+                response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{username}")
+                if response.status_code == 204:
+                    is_premium = "Cracked"
+            except:
+                pass
+            print(f"{username} ({is_premium})")
+            printed_usernames.add(username)  # Add the username to the set of printed usernames
 else:
     print(f"{username_cache_path} not found.")
 
