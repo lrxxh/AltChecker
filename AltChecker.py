@@ -32,34 +32,43 @@ else:
 user_name = os.environ['USERNAME']
 json_file_path = f'C:/Users/{user_name}/AppData/Roaming/.minecraft/usercache.json'
 
-with open(json_file_path, 'r') as f:
-    data = json.load(f)
+# Check if the file exists
+if os.path.isfile(json_file_path):
+    with open(json_file_path, 'r') as f:
+        data = json.load(f)
 
-for item in data:
-    username = item['name']
-    is_premium = "Premium"
-    try:
-        response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{username}")
-        if response.status_code == 204:
-            is_premium = "Cracked"
-    except:
-        pass
-    print(f"{username} ({is_premium})")
+    for item in data:
+        username = item['name']
+        is_premium = "Premium"
+        try:
+            response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{username}")
+            if response.status_code == 204:
+                is_premium = "Cracked"
+        except:
+            pass
+        print(f"{username} ({is_premium})")
+else:
+    print(f"{json_file_path} not found.")
 
 # Minecraft usernames from usernamecache.json
 username_cache_path = f'C:/Users/{user_name}/AppData/Roaming/.minecraft/usernamecache.json'
-with open(username_cache_path, 'r') as f:
-    data = json.load(f)
 
-for username in data.values():
-    is_premium = "Premium"
-    try:
-        response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{username}")
-        if response.status_code == 204:
-            is_premium = "Cracked"
-    except:
-        pass
-    print(f"{username} ({is_premium})")
+# Check if the file exists
+if os.path.isfile(username_cache_path):
+    with open(username_cache_path, 'r') as f:
+        data = json.load(f)
+
+    for username in data.values():
+        is_premium = "Premium"
+        try:
+            response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{username}")
+            if response.status_code == 204:
+                is_premium = "Cracked"
+        except:
+            pass
+        print(f"{username} ({is_premium})")
+else:
+    print(f"{username_cache_path} not found.")
 
 os.system("pause")
 # made by lrxh#0001
