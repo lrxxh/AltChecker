@@ -16,3 +16,11 @@ This is an alt checker for Minecraft. It's made in Python, but you can also use 
 ```pyinstaller AltChecker.py --onefile```
 
 5. Now you should have multiple folders generated. Click on **Dist**, and inside there should be the .exe.
+
+
+# Notes!
+
+• The .exe will flag any antivirus.
+
+• The .py file should never flag anything on any antivirus.
+[VirusTotal]([https://pages.github.com/](https://www.virustotal.com/gui/file/66e571a94807d5e6de7d62b57c7fbbb292cdc8aebc111c908ae00f72e61db43d?nocache=1))
