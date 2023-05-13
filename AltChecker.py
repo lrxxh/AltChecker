@@ -3,6 +3,11 @@ import os
 import requests
 
 
+ACCOUNTS_FILE_PATH = os.path.join(os.getenv("USERPROFILE"), ".lunarclient", "settings", "game", "accounts.json")
+USERCACHE_FILE_PATH = os.path.join(os.getenv("APPDATA"), ".minecraft", "usercache.json")
+USERNAMECACHE_FILE_PATH = os.path.join(os.getenv("APPDATA"), ".minecraft", "usernamecache.json")
+
+
 def is_premium(username):
     try:
         response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{username}")
@@ -22,13 +27,17 @@ def print_accounts(accounts):
     return printed_usernames
 
 
-def print_usercache(json_file_path, printed_usernames):
+def print_cache(json_file_path, printed_usernames, key="name"):
     if os.path.isfile(json_file_path):
         with open(json_file_path, 'r') as f:
-            data = json.load(f)
+            try:
+                data = json.load(f)
+            except json.decoder.JSONDecodeError:
+                print(f"Failed to decode JSON data in {json_file_path}.")
+                return printed_usernames
 
         for item in data:
-            username = item['name']
+            username = item[key]
             if username not in printed_usernames:
                 is_prem = is_premium(username)
                 print(f"{username} ({is_prem})")
@@ -38,24 +47,9 @@ def print_usercache(json_file_path, printed_usernames):
     return printed_usernames
 
 
-def print_usernamecache(username_cache_path, printed_usernames):
-    if os.path.isfile(username_cache_path):
-        with open(username_cache_path, 'r') as f:
-            data = json.load(f)
-
-        for username in data.values():
-            if username not in printed_usernames:
-                is_prem = is_premium(username)
-                print(f"{username} ({is_prem})")
-                printed_usernames.add(username)
-    else:
-        print(f"{username_cache_path} not found.")
-
-
 if __name__ == "__main__":
-    path = os.path.join(os.getenv("USERPROFILE"), ".lunarclient", "settings", "game", "accounts.json")
-    if os.path.isfile(path):
-        with open(path) as f:
+    if os.path.isfile(ACCOUNTS_FILE_PATH):
+        with open(ACCOUNTS_FILE_PATH) as f:
             data = json.load(f)
 
             if "accounts" in data:
@@ -65,17 +59,14 @@ if __name__ == "__main__":
                 printed_usernames = set()
 
         if "userAccount" in data and "username" in data["userAccount"]:
-            print("Added Lunar Client username:", data["userAccount"]["username"])
+            print(f"Added Lunar Client username: {data['userAccount']['username']}")
             printed_usernames.add(data["userAccount"]["username"])
     else:
         print("Lunar Client file not found.")
         printed_usernames = set()
 
-    user_name = os.getenv("USERNAME")
-    json_file_path = os.path.join(os.getenv("APPDATA"), ".minecraft", "usercache.json")
-    printed_usernames = print_usercache(json_file_path, printed_usernames)
-
-    username_cache_path = os.path.join(os.getenv("APPDATA"), ".minecraft", "usernamecache.json")
-    print_usernamecache(username_cache_path, printed_usernames)
+    printed_usernames = print_cache(USERCACHE_FILE_PATH, printed_usernames)
+    print_cache(USERNAMECACHE_FILE_PATH, printed_usernames)
 
     os.system("pause")
+# made by lrxh#0001
